@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+var routes=require('./routes');
 var http=require('http');
 
 var indexRouter = require('./routes/index');
@@ -9,6 +10,7 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 // view engine setup
+app.set('port',3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.json());
@@ -36,3 +38,11 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+app.get('/',function(req,res){
+  res.render('/views/index.ejs');
+});
+
+http.createServer(app).listen(app.get('port'),function(){
+  console.log('Express 서버 실행중');
+});
