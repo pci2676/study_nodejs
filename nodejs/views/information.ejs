@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>모여라 인벤져스!</title>
   <link rel="stylesheet" href="../stylesheets/style.css">
-  </head>
+</head>
 <style>
   html,
   body,
@@ -19,27 +19,16 @@
     font-family: "Roboto", sans-serif;
   }
 </style>
-<script>
-  var numberOfPost = 5; //표시할 포스트의 갯수 임의의값
-  var postName = "글 제목입니다"; //글제목 저장할 변수
-  var postCategory = "소분류"; //IT, 디자인 이런 소분류
-  var postNumber = 1; //글번호
-  var views = 1; //조회수 담을 변수
-  var postLink = "projectPosts.ejs?postNumber=" + postNumber;
-
-  var sqlBestPost = "SELECT * FROM project WHERE views = (SELECT MAX(views) FROM project_post)"; //조회수가 제일 많은 게시글을 불러온다
-  var sqlPost = "SELECT * FROM project ORDER BY postNumber DESC"; //글을 최신순으로 불러온다
-</script>
 
 <body>
   <!--웹사이트의 Navigation View-->
   <nav>
     <div class="navbar">
       <div id="logo">
-        <a href='main'> 홈</a>
+        <a href="main"> 홈</a>
       </div>
       <div id="account">
-        <a href="/../login" class="btn_white">로그인</a>
+        <a href="login" class="btn_white">로그인</a>
       </div>
 
       <div id="menu">
@@ -74,52 +63,11 @@
       </div>
     </div>
   </nav>
-  <!-- 게시글 일부를 긁어오는 View -->
-  <div id="container" class="community">
-    <div class="main">
-      <div class="divider">
-        <div class="card">
-          <a href="projectView"><h3>프로젝트 모집</h3></a>
 
-          <!-- for(var i =0; i<numberOfPost; i++){ -->
-          <div class="article">
-            [
-            <script>
-              document.write(postCategory);
-            </script>]
-            <a href="&{postLink};">
-              <script>
-                document.write(postName);
-              </script>
-            </a>
-            <img src="image/new.png">
-          </div>
-          <!-- } -->
-        </div>
-      </div>
-
-      <div class="divider">
-        <div class="card">
-        <a href="hobbyView">  <h3>취미 공유</h3></a>
-
-        </div>
-      </div>
-
-      <div class="divider">
-        <div class="card">
-          <a href="circleView"><h3>동아리 모집</h3></a>
-          <a></a>
-        </div>
-      </div>
+  <div id="container">
+    <div class="postView">
 
     </div>
-  </div>
-
-  <div class="searchBar">
-    <form id="content">
-      <input type="text" name="input" class="input">
-      <button type="reset" class="search"></button>
-    </form>
   </div>
 
   <div class="bottom">
@@ -129,7 +77,6 @@
       <li><a href="/question">문의하기</a></li>
     </ul>
   </div>
-
 </body>
 
 </html>

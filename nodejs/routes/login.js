@@ -1,3 +1,5 @@
+//login.ejs에서 정보를 받아와 처리를 하는 js
+
 var express = require('express');
 var async = require('async');
 var router = express.Router();
@@ -11,6 +13,7 @@ var newface ='select * from member where stuid= ?';
 router.post('/', function(req, res) {
   //console.log(req.query.id);
 var stuid = req.body.id;
+var pass= req.body.pass;
   var arr = [
 
     (callback) => {
@@ -37,9 +40,18 @@ var stuid = req.body.id;
         }
 
         if(rows.length > 0){
-          //로그인시킨다.
-            res.render('../views/main',{id:stuid});
-          res.redirect
+          console.log('가입자');
+          //패스워드 비교후 로그인시킨다.
+          if(rows[0].pass==pass){
+            //세션값 지정후
+            res.redirect(302,'/board/main');
+          }else{
+            //비밀번호 틀림
+            //다시 로그인창으로
+            res.render("login");
+          }
+
+
         }else{
           //첫방문 >> 추가정보 입력란으로
           console.log("첫방문");
