@@ -10,9 +10,9 @@ var mysql = require('mysql'); //mysql 모듈을 로딩.
 var connection = mysql.createConnection({
   host: 'localhost', // DB가 위치한 IP주소
   port: 3306,          // DB와 연결할 포트번호
-  user: 'choi',        // 계정이름
-  password: '1234',    // 계정 비밀번호
-  database: 'board01'    // 데이터베이스 이름
+  user: '',        // 계정이름
+  password: '',    // 계정 비밀번호
+  database: ''    // 데이터베이스 이름
 });
 
 /* GET List Page. */

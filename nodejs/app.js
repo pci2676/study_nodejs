@@ -4,14 +4,21 @@ var path = require('path');
 var routes=require('./routes');
 var http=require('http');
 
+
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var boardRouter = require('./routes/board');
+
 
 var app = express();
 
+//bodyParser를 사용하기 위해서
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true}));
+
 // view engine setup
-app.set('port',3000);
+app.set('port',10002);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.json());
@@ -19,9 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+//라우팅
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/board',boardRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -38,13 +46,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-module.exports = app;
-
-app.get('/',function(req,res){
-  res.render('/views/index.ejs');
-});
-
 http.createServer(app).listen(app.get('port'),function(){
   console.log('Express 서버 실행중');
 });
+module.exports = app;
