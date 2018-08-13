@@ -3,7 +3,7 @@ const transport = {
   service:'gmail',
   auth:{
     user:'pci2676@gmail.com',
-    pass:'비민번호'
+    pass:'`cksdls1'
   }
 };
 module.exports={
