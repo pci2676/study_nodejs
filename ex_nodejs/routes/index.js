@@ -10,6 +10,9 @@ router.use('/verify',verify);
 var duplicate_id=require('./duplicate_id');
 router.use('/duplicate_id',duplicate_id);
 
+var auth = require('./auth/verify_email');
+router.use('/auth',auth);
+
 /* GET home page. */
 router.get('/', function(req, res,next) {
   res.render('login');

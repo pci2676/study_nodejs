@@ -1,6 +1,6 @@
-var express = require('express');
-var async = require('async');
-var router = express.Router();
+const express = require('express');
+const async = require('async');
+const router = express.Router();
 
 
 
@@ -9,16 +9,22 @@ router.get('/',function(req,res){
 });
 
 router.post('/',function(req,res){
-  var pool = require('./config/db_con');
+  const pool = require('./config/db_con');
 
-  var pbkdf2Password = require('pbkdf2-password');
-  var hasher= pbkdf2Password();
+  const pbkdf2Password = require('pbkdf2-password');
+  const hasher= pbkdf2Password();
+  const phone_hasher = pbkdf2Password({keyLength:10});
 
-  var query="INSERT INTO users values(?,?,?)";
+  const nodemailer = require('nodemailer');
+  const config = require('./config/config');
+  let transporter = nodemailer.createTransport(config.transport);
 
-  var userId=req.body.userId;
-  var userPass;
-  var userSalt;
+
+  const query="INSERT INTO users values(?,?,?,?,?,?)";
+
+  const userEmail=req.body.userEmail;
+  const userName=req.body.userName;
+  const userPhone=req.body.userPhone;
 
   var arr=[
     (callback)=>{
@@ -26,13 +32,13 @@ router.post('/',function(req,res){
         if(err){
           callback("Hashing Error :",err);
         }else{
-        userPass=hash;
-        userSalt=salt;
-        callback(null);
+        const userPass=hash;
+        const userSalt=salt;
+        callback(null,userPass,userSalt);
       }
       });
   },
-    (callback)=>{
+    (userPass,userSalt,callback)=>{
       pool.getConnection((err,connection)=>{
         if(err){
           res.status(500).send({
@@ -42,12 +48,12 @@ router.post('/',function(req,res){
           connection.release();
           callback("DB Connection Fail : "+err);
         }else{
-          callback(null,connection);
+          callback(null,connection,userPass,userSalt);
         }
       });
     },
-    (connection,callback)=>{
-      connection.query(query,[userId,userPass,userSalt],function(err,rows){
+    (connection,userPass,userSalt,callback)=>{
+      connection.query(query,[userEmail,userName,userPass,userSalt,userPhone,'false'],function(err,rows){
         if(err){
           res.status(500).send({
             status:false,
@@ -66,9 +72,37 @@ router.post('/',function(req,res){
               callback("Commit Error : "+err);
             }else{
               connection.release();
-              callback(null,true);
+              callback(null);
             }
           });
+        }
+      });
+    },
+    (callback)=>{
+      //인증 이메일에 쓰일 토큰으로 userEmail을 사용하고 그에 해당하는 salt는 userPhone으로 한다.
+      phone_hasher({password:userEmail,salt:userPhone},function(err,pass,salt,hash){
+        if(err){
+          callback("Hashing Error2 :",err);
+        }else{
+        callback(null,hash);
+      }
+      });
+    },
+    (email,callback)=>{
+
+      let mailOptions = {
+        from:'pci2676@gmail.com',
+        to:userEmail,
+        subject:'인증메일입니다.',
+        html:"<a href='http://localhost:3000/auth?email='"+userEmail+"&token="+email+">인증하기</a>"
+      };
+
+      transporter.sendMail(mailOptions,function(err,info){
+        if(err){
+          callback("Mailing Error : "+err);
+        }else{
+          console.log("Mailing Success.");
+          callback(null,true);
         }
       });
     }
