@@ -90,11 +90,12 @@ router.post('/',function(req,res){
     },
     (email,callback)=>{
 
+      const context="<a href='"+"http://localhost:3000/auth?email="+userEmail+"&token="+email+"'>인증하기</a>";
       let mailOptions = {
         from:'pci2676@gmail.com',
         to:userEmail,
         subject:'인증메일입니다.',
-        html:"<a href='http://localhost:3000/auth?email='"+userEmail+"&token="+email+">인증하기</a>"
+        html:context
       };
 
       transporter.sendMail(mailOptions,function(err,info){
