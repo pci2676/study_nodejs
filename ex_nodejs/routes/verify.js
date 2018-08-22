@@ -1,4 +1,3 @@
-
 var jwt = require('jsonwebtoken');
 const conf = require('./config/config.js');
 
@@ -12,6 +11,6 @@ module.exports = function(token){
       }else{
         validation=1;
       }
-      return validation;
     });
+  return validation;
 };

@@ -1,7 +1,15 @@
 const express = require('express');
 const async = require('async');
 const router = express.Router();
+const pool = require('./config/db_con');
 
+const pbkdf2Password = require('pbkdf2-password');
+const hasher= pbkdf2Password();
+const phone_hasher = pbkdf2Password({keyLength:10});
+
+const nodemailer = require('nodemailer');
+const config = require('./config/config');
+let transporter = nodemailer.createTransport(config.transport);
 
 
 router.get('/',function(req,res){
@@ -9,16 +17,6 @@ router.get('/',function(req,res){
 });
 
 router.post('/',function(req,res){
-  const pool = require('./config/db_con');
-
-  const pbkdf2Password = require('pbkdf2-password');
-  const hasher= pbkdf2Password();
-  const phone_hasher = pbkdf2Password({keyLength:10});
-
-  const nodemailer = require('nodemailer');
-  const config = require('./config/config');
-  let transporter = nodemailer.createTransport(config.transport);
-
 
   const query="INSERT INTO users values(?,?,?,?,?,?)";
 

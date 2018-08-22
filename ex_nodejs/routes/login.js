@@ -1,10 +1,10 @@
-var express = require('express');
-var async = require('async');
-var router = express.Router();
-var jwt = require('jsonwebtoken');
-var pool = require('./config/db_con');
-var app = express();
-var cookieParser = require('cookie-parser');
+const async = require('async');
+const express = require('express');
+const router = express.Router();
+const jwt = require('jsonwebtoken');
+const pool = require('./config/db_con');
+const app = express();
+const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 const conf = require('./config/config.js');
@@ -15,10 +15,11 @@ router.get('/', function(req, res) {
 
 router.post('/', function(req, res) {
 
-  var pbkdf2Password = require('pbkdf2-password');
-  var hasher = pbkdf2Password();
+  const pbkdf2Password = require('pbkdf2-password');
+  const hasher = pbkdf2Password();
 
-  var arr = [
+  let arr = [
+    //db연결
     (callback) => {
       pool.getConnection((err, connection) => {
         if (err) {
@@ -33,9 +34,11 @@ router.post('/', function(req, res) {
         }
       });
     },
+
+    //id 비교해서 id pass salt 가져오기
     (connection, callback) => {
-      var login_query = 'SELECT count(*) AS cnt, userId, userPass, userSalt FROM users WHERE userId = ?';
-      connection.query(login_query, [req.body.userId], function(err, rows) {
+      var login_query = 'SELECT count(*) AS cnt, userEmail, userPass, userSalt FROM users WHERE userEmail = ?';
+      connection.query(login_query, [req.body.userEmail], function(err, rows) {
         if (err) {
           res.status(500).send({
             status: false,
@@ -47,13 +50,13 @@ router.post('/', function(req, res) {
           if (rows.cnt === 0) {
             res.status(500).send({
               status: false,
-              msg: 'ID doens\'t exist.',
+              msg: 'Email doens\'t exist.',
             });
             connection.release();
             //id가 존재하지 않을때의 logic을 적어야함.
           } else {
             var info = new Array();
-            info[0] = rows[0].userId;
+            info[0] = rows[0].userEmail;
             info[1] = rows[0].userPass;
             info[2] = rows[0].userSalt;
             connection.release();
@@ -62,6 +65,8 @@ router.post('/', function(req, res) {
         }
       });
     },
+
+    //비밀번호 비교
     (info, callback) => {
       hasher({
         password: req.body.userPass,
@@ -82,10 +87,12 @@ router.post('/', function(req, res) {
         }
       });
     },
-    (userId, callback) => {
+
+    //jwt 발급
+    (userEmail, callback) => {
       var payload ={
         'type':'jwt',
-        'userId':userId
+        'userEmail':userEmail
       };
 
       jwt.sign(
@@ -117,7 +124,7 @@ router.post('/', function(req, res) {
       // res.cookie('jwt',result,{httpOnly:true,signed:true});
 
       res.cookie('jwt',result,{httpOnly:true});
-      res.redirect(302, '/verify');
+      res.redirect(302, '/main');
     }
   });
 
